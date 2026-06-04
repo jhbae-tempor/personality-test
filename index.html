@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>채용 인성검사</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1f2433; --muted:#727a93;
+    --accent:#5b5bd6; --accent-2:#7b6cf0; --accent-soft:#ececfb; --accent-line:#cdcef2;
+    --line:#e7e9f2; --ok:#1f9d57;
+    --shadow:0 10px 30px rgba(40,46,90,.08); --shadow-sm:0 2px 10px rgba(40,46,90,.05);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased;letter-spacing:-0.1px}
+  .wrap{max-width:680px;margin:0 auto;padding:28px 18px 130px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    box-shadow:var(--shadow-sm);padding:26px 26px;margin-bottom:18px}
+  .hero{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border:none;
+    border-radius:20px;padding:30px 28px;box-shadow:var(--shadow);margin-bottom:18px}
+  .hero h1{margin:0 0 8px;font-size:24px;font-weight:800;letter-spacing:-0.4px}
+  .hero p{margin:0;opacity:.92;font-size:14px}
+  .hero .pills{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+    padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:600}
+  .note{background:var(--accent-soft);border:1px solid #e0e0f7;border-radius:14px;
+    padding:15px 17px;font-size:13.5px;color:#3a3f63}
+  .note b{color:var(--accent)}
+  ul{margin:8px 0 0;padding-left:18px} li{margin:3px 0}
+  .field{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px}
+  .field label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:5px;font-weight:600}
+  .field input{padding:11px 13px;border:1.5px solid var(--line);border-radius:11px;font-size:15px;
+    width:230px;font-family:inherit;transition:.15s;background:#fbfbfe}
+  .field input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px var(--accent-soft)}
+  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .sec-head .badge{background:var(--accent);color:#fff;font-size:12px;font-weight:800;
+    padding:3px 10px;border-radius:8px;letter-spacing:.3px}
+  .sec-head h2{margin:0;font-size:18px;font-weight:800;color:var(--ink)}
+  .sec-desc{color:var(--muted);font-size:13.5px;margin:0 0 6px}
+  .cat{display:flex;align-items:center;gap:11px;margin:8px 0 2px;padding:16px 14px;
+    background:linear-gradient(135deg,#f4f3fe,#eef0fc);border:1px solid #e3e4f7;border-radius:13px}
+  .cat:not(:first-of-type){margin-top:26px}
+  .cat .cno{width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 30px}
+  .cat .ct{font-size:15.5px;font-weight:800;color:var(--ink);line-height:1.3}
+  .cat .cd{font-size:12px;color:var(--muted)}
+  .q{padding:18px 4px;border-bottom:1px solid var(--line)}
+  .q .qt{font-size:15.5px;margin-bottom:14px;font-weight:500}
+  .q .qn{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;
+    background:var(--accent-soft);color:var(--accent);border-radius:7px;font-size:12.5px;font-weight:800;
+    margin-right:9px;padding:0 6px}
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:430px}
+  .opt{position:relative}
+  .opt input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+  .opt .face{display:flex;flex-direction:column;align-items:center;gap:7px;padding:4px 2px;cursor:pointer}
+  .opt .dot{width:40px;height:40px;border-radius:50%;border:2px solid var(--accent-line);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;
+    color:var(--muted);background:#fff;transition:.15s}
+  .opt .lab{font-size:11px;color:var(--muted);text-align:center;line-height:1.25;transition:.15s}
+  .opt:hover .dot{border-color:var(--accent);color:var(--accent)}
+  .opt input:checked + .face .dot{background:var(--accent);border-color:var(--accent);color:#fff;
+    transform:scale(1.08);box-shadow:0 4px 12px rgba(91,91,214,.35)}
+  .opt input:checked + .face .lab{color:var(--accent);font-weight:700}
+  .opt input:focus-visible + .face .dot{outline:2px solid var(--accent);outline-offset:3px}
+  .q.missing{background:#fff6f6;border-radius:14px;padding-left:14px;padding-right:14px}
+  .q.missing .dot{border-color:#e98b8b}
+  .q.missing .choice span{border-color:#e98b8b}
+  .sit{font-size:15.5px;margin-bottom:14px;font-weight:500}
+  .sit .qn{background:#e7f6ee;color:var(--ok)}
+  .choices{display:flex;flex-direction:column;gap:9px}
+  .choice{position:relative}
+  .choice input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+  .choice span{display:flex;gap:11px;align-items:flex-start;border:1.5px solid var(--line);
+    border-radius:13px;padding:13px 15px;font-size:14.5px;color:#3a3f55;cursor:pointer;
+    background:#fbfbfe;transition:.15s}
+  .choice span::before{content:"";flex:0 0 18px;width:18px;height:18px;border-radius:50%;
+    border:2px solid var(--accent-line);margin-top:2px;transition:.15s}
+  .choice:hover span{border-color:var(--accent-line);background:#fff}
+  .choice input:checked + span{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+  .choice input:checked + span::before{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px #fff}
+  .choice input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+  .btn{appearance:none;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;font-size:16px;font-weight:800;padding:15px 30px;border-radius:14px;cursor:pointer;
+    font-family:inherit;transition:.15s;box-shadow:0 8px 20px rgba(91,91,214,.30)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(91,91,214,.40)}
+  .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .err{color:#d23b3b;font-size:13.5px;margin-top:12px;font-weight:600}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);padding:12px 18px;z-index:10}
+  .bar .inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .track{flex:1;height:9px;background:#e7e9f4;border-radius:99px;overflow:hidden}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    border-radius:99px;transition:width .25s ease}
+  .count{font-size:13px;color:var(--muted);white-space:nowrap;min-width:70px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .hide{display:none}
+  .done{text-align:center;padding:56px 26px}
+  .done .check{width:80px;height:80px;border-radius:50%;background:#e7f6ee;color:var(--ok);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:42px}
+  .done h1{color:var(--ink);font-size:23px;margin:0 0 8px}
+  @media(max-width:480px){
+    .opt .dot{width:36px;height:36px;font-size:14px}
+    .opt .lab{font-size:10px}
+    .field input{width:100%}
+    .card,.hero{padding:22px 18px}
+    .scale{max-width:none}
+  }
+  .consent-box{max-height:210px;overflow:auto;border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;background:#fbfbfe;font-size:12.5px;color:#454b60;line-height:1.65}
+  .consent-box p{margin:0 0 8px} .consent-box ul{margin:0;padding-left:18px} .consent-box b{color:var(--ink)}
+  .agree{display:flex;align-items:flex-start;gap:10px;margin-top:14px;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
+  .agree input{width:20px;height:20px;accent-color:var(--accent);margin:1px 0 0;cursor:pointer;flex:0 0 20px}
+  .req{color:#d23b3b;font-weight:700}
+  .field input.miss{border-color:#e98b8b;background:#fff6f6}
+  #consentCard.missing{box-shadow:0 0 0 2px #e98b8b}
+  .agree.missing span{color:#d23b3b}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="testView">
+    <div class="hero">
+      <h1>채용 인성검사</h1>
+      <p>평소 본인의 모습과 가장 가까운 것을 솔직하게 선택해 주세요. 정답은 없습니다.</p>
+      <div class="pills"><span class="pill">약 12분</span><span class="pill">4개 영역</span><span class="pill">총 46문항</span></div>
+    </div>
+    <div class="card">
+      <div class="note">
+        <b>안내</b> · 1부는 평소 성향(5점 척도), 2부는 상황 판단입니다. 너무 오래 고민하지 말고
+        떠오르는 대로 응답하세요. 모든 문항에 빠짐없이 답해야 제출됩니다.
+        <ul><li>1 = 전혀 아니다 · 3 = 보통 · 5 = 매우 그렇다</li></ul>
+      </div>
+    </div>
+    <div class="card" id="consentCard">
+      <div class="sec-head"><span class="badge" style="background:#d23b3b">필수</span><h2>개인정보 수집·이용 동의</h2></div>
+      <div class="consent-box">
+        <p><b>[회사명]</b>(이하 &#8220;회사&#8221;)은 채용 전형을 위해 아래와 같이 개인정보를 수집·이용합니다.</p>
+        <ul>
+          <li><b>수집 항목</b> : 성명, 지원 분야, 전화번호, 인성검사 응답 결과</li>
+          <li><b>수집·이용 목적</b> : 채용 전형 진행 및 직무 적합성 평가</li>
+          <li><b>보유·이용 기간</b> : 채용 종료 후 [예: 6개월] 보관 후 파기 (불합격자 포함)</li>
+          <li><b>동의 거부 권리</b> : 동의를 거부할 수 있으며, 거부 시 검사 응시 및 채용 전형 참여가 제한될 수 있습니다.</li>
+        </ul>
+      </div>
+      <label class="agree" id="agreeRow"><input type="checkbox" id="agree"><span>위 개인정보 수집·이용에 동의합니다. <span class="req">(필수)</span></span></label>
+    </div>
+    <div class="card">
+      <div class="sec-head"><span class="badge">정보</span><h2>응시자 기본 정보</h2></div>
+      <div class="field">
+        <div><label for="name">성명 <span class="req">*</span></label><input id="name" type="text" autocomplete="off" placeholder="홍길동"></div>
+        <div><label for="job">지원 분야 <span class="req">*</span></label><input id="job" type="text" autocomplete="off" placeholder="예: 경영지원"></div>
+        <div><label for="phone">전화번호 <span class="req">*</span></label><input id="phone" type="tel" autocomplete="off" placeholder="010-0000-0000"></div>
+      </div>
+      <div id="infoErr" class="err hide">필수 항목(동의 · 성명 · 지원 분야 · 전화번호)을 확인해 주세요.</div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><span class="badge">1부</span><h2>평소 성향</h2></div>
+      <p class="sec-desc">맞고 틀린 답은 없습니다. 각 문항이 본인과 얼마나 맞는지 편하게 골라주세요.</p>
+      <div id="questions"></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><span class="badge" style="background:var(--ok)">2부</span><h2>상황 판단</h2></div>
+      <p class="sec-desc">정답은 없습니다. 실제 그 상황이라면 <b>본인이 가장 할 법한 행동</b>을 골라주세요.</p>
+      <div id="sjt"></div>
+    </div>
+    <div class="card" style="text-align:center">
+      <button id="submitBtn" class="btn">제출하기</button>
+      <div id="formErr" class="err hide">아직 응답하지 않은 문항이 있습니다. 표시된 문항을 확인해 주세요.</div>
+    </div>
+  </div>
+  <div id="doneView" class="card done hide">
+    <div class="check">✓</div>
+    <h1>제출이 완료되었습니다</h1>
+    <p class="sec-desc" style="font-size:15px">응답해 주셔서 감사합니다. 결과는 채용 담당자가 확인합니다.</p>
+    <div id="sendState" class="sec-desc" style="font-size:13px;margin-top:12px"></div>
+  </div>
+</div>
+<div id="progressBar" class="bar">
+  <div class="inner">
+    <div class="track"><div id="fill" class="fill"></div></div>
+    <div id="count" class="count">0 / 46</div>
+  </div>
+</div>
+<script>
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzD9WLdVIcAWZd-YjjUSPpOVTm2sHaRrPpDKOFF2VDJCTRVxvVlEVlEFQLKcqGhUPe6_Q/exec";
+/* 1부. s=척도(C성실 / I정직 / A공격성-대인 / E정서안정 / L위장), d=채점(+정 / R역 / L위장) */
+const ITEMS = [
+  {n:1,  s:"C", d:"+", f:"계획성",   t:"일을 시작하기 전에 순서와 계획을 먼저 정해 둔다."},
+  {n:2,  s:"I", d:"+", f:"진실성",   t:"원하는 것을 얻으려고 사람을 치켜세우거나 비위를 맞추지는 않는다."},
+  {n:3,  s:"A", d:"R", f:"적대성",   t:"기다리거나 일이 막히면 표정이나 말투에 금방 드러나는 편이다."},
+  {n:4,  s:"E", d:"+", f:"평정심",   t:"압박이 큰 상황에서도 비교적 침착함을 유지한다."},
+  {n:5,  s:"L", d:"L", f:"위장",     t:"나는 지금까지 단 한 번도 거짓말을 한 적이 없다."},
+  {n:6,  s:"C", d:"R", f:"신뢰성",   t:"‘조금 있다 하지’ 하다가 마감에 쫓기는 일이 종종 있다."},
+  {n:7,  s:"I", d:"+", f:"정직보고", t:"내 잘못으로 문제가 생기면 불리해지더라도 사실대로 알린다."},
+  {n:8,  s:"A", d:"+", f:"협력",     t:"의견이 부딪쳐도 상대를 존중하며 대화로 풀어간다."},
+  {n:9,  s:"E", d:"R", f:"동요",     t:"사소한 실수도 한참 머릿속에 맴돌아 다음 일에 집중이 잘 안 될 때가 있다."},
+  {n:10, s:"L", d:"L", f:"위장",     t:"나는 화를 낸 적이 한 번도 없다."},
+  {n:11, s:"C", d:"+", f:"정돈",     t:"자료와 물건을 제자리에 정리해 두어야 마음이 편하다."},
+  {n:12, s:"I", d:"R", f:"공정성",   t:"원칙대로 하면 손해를 볼 때는, 융통성을 발휘하는 것도 능력이라고 본다."},
+  {n:13, s:"A", d:"R", f:"적대성",   t:"누가 선을 넘었다 싶으면 그 일이 한동안 마음에 남는다."},
+  {n:14, s:"E", d:"+", f:"회복력",   t:"스트레스를 받아도 비교적 빨리 평상심을 되찾는다."},
+  {n:15, s:"L", d:"L", f:"위장",     t:"나는 약속을 잊어버린 적이 한 번도 없다."},
+  {n:16, s:"C", d:"+", f:"신뢰성",   t:"약속한 시간과 마감을 정확히 지킨다."},
+  {n:17, s:"I", d:"+", f:"규범준수", t:"보는 사람이 없어도 정해진 절차대로 한다."},
+  {n:18, s:"A", d:"+", f:"배려",     t:"동료가 어려움을 겪으면 먼저 도우려 한다."},
+  {n:19, s:"E", d:"R", f:"불안",     t:"마감이나 평가가 다가오면 쉽게 초조해진다."},
+  {n:20, s:"L", d:"L", f:"위장",     t:"나는 어떤 일에서도 실수한 적이 없다."},
+  {n:21, s:"C", d:"R", f:"자기통제", t:"발등에 불이 떨어져야 일이 손에 잡히는 편이다."},
+  {n:22, s:"I", d:"R", f:"공정성",   t:"회사 돈과 내 돈의 경계가 가끔 흐릿해질 때가 있다."},
+  {n:23, s:"A", d:"R", f:"공격성",   t:"내 뜻대로 되지 않으면 강하게 밀어붙이는 편이다."},
+  {n:24, s:"E", d:"+", f:"안정성",   t:"예상치 못한 문제가 생겨도 당황하지 않고 대처한다."},
+  {n:25, s:"L", d:"L", f:"위장",     t:"나는 규칙을 어기고 싶다는 생각조차 해 본 적이 없다."},
+  {n:26, s:"C", d:"+", f:"책임",     t:"맡은 책임은 번거롭더라도 끝까지 다한다."},
+  {n:27, s:"I", d:"+", f:"정직보고", t:"그냥 묻힐 수 있는 실수라도 솔직하게 보고하는 편이다."},
+  {n:28, s:"A", d:"R", f:"비난성향", t:"일이 잘못되면 내 몫보다 상황이나 다른 사람의 영향이 더 컸다고 느낀다."},
+  {n:29, s:"E", d:"R", f:"기복",     t:"그날의 기분에 따라 일의 능률이 눈에 띄게 달라지는 편이다."},
+  {n:30, s:"L", d:"L", f:"위장",     t:"나는 늘 모든 일에 100% 최선을 다해 왔다."},
+  {n:31, s:"C", d:"+", f:"꼼꼼함",   t:"내 결과물은 제출하기 전에 한 번 더 점검한다."},
+  {n:32, s:"I", d:"+", f:"탐욕회피", t:"더 많은 돈이나 지위를 위해 원칙을 굽히지는 않는다."},
+  {n:33, s:"A", d:"+", f:"온화함",   t:"화가 나도 말이나 행동으로 함부로 표출하지 않는다."},
+  {n:34, s:"E", d:"+", f:"의연함",   t:"비판을 받아도 크게 흔들리지 않고 받아들인다."},
+  {n:35, s:"C", d:"R", f:"성취",     t:"굳이 기대 이상으로 하기보다, 요청받은 선에서 마무리하는 편이다."},
+  {n:36, s:"I", d:"R", f:"공정성",   t:"주변에서 다들 하는 일이면 나도 크게 문제될 것은 없다고 느낀다."},
+  {n:37, s:"A", d:"R", f:"갈등",     t:"직장에서 사람들과 부딪치는 일이 잦은 편이다."},
+  {n:38, s:"E", d:"R", f:"위축",     t:"일이 잘 풀리지 않으면 쉽게 의욕을 잃는다."},
+  {n:39, s:"C", d:"+", f:"끈기",     t:"한 번 막혔다고 손을 놓기보다, 다른 길을 찾아 계속 붙들고 있는 편이다."},
+  {n:40, s:"I", d:"+", f:"진실성",   t:"사소한 거짓말이라도 하고 나면 마음이 불편하다."}
+];
+/* 화면 카테고리: 위장(L) 문항을 각 카테고리에 자연스럽게 섞어 배치 */
+const CATS = [
+  {no:"A", t:"평소 일하는 방식", d:"맞고 틀린 답은 없습니다. 떠오르는 대로 편하게 답해주세요.", nums:[1,6,11,16,15,21,26,31,20,35,39,30]},
+  {no:"B", t:"회사 생활의 여러 장면", d:"옳은 답을 고르려 하지 말고, 평소 생각 그대로 답해주세요.", nums:[2,7,5,12,17,22,27,25,32,36,40]},
+  {no:"C", t:"사람들과 함께 일할 때", d:"솔직하게 답할수록 본인에게 더 잘 맞는 결과가 나옵니다.", nums:[3,8,13,10,18,23,28,33,37]},
+  {no:"D", t:"바쁘거나 힘든 상황에서", d:"정답은 없습니다. 있는 그대로 편하게 답해주세요.", nums:[4,9,14,19,24,29,34,38]}
+];
+const ANCHORS = ["전혀|아니다","아니다","보통","그렇다","매우|그렇다"];
+const SJT = [
+  {n:1, q:"마감 직전, 본인 실수로 보고서에 오류가 있는 걸 발견했습니다. 아직 상사는 모릅니다. 어떻게 하겠습니까?", opts:[
+    {t:"바로 상사에게 알리고 수정 방안을 함께 논의한다.", p:3},
+    {t:"먼저 혼자 고칠 수 있는지 시도하고, 어려우면 보고한다.", p:2},
+    {t:"일단 제출하고 문제가 생기면 그때 설명한다.", p:1},
+    {t:"티 안 나게 넘기고 아무에게도 말하지 않는다.", p:0}]},
+  {n:2, q:"출장 경비를 정산합니다. 실제보다 조금 더 청구해도 표가 나지 않을 것 같습니다. 어떻게 하겠습니까?", opts:[
+    {t:"실제 사용한 금액만 정확히 청구한다.", p:3},
+    {t:"애매한 항목은 경리팀에 확인한 뒤 청구한다.", p:2},
+    {t:"깜빡한 소액이 있으니 적당히 올려 청구한다.", p:1},
+    {t:"다들 조금씩 올리는 관행이라 나도 그렇게 한다.", p:0}]},
+  {n:3, q:"바쁜 와중에 동료가 내 실수를 사람들 앞에서 지적했습니다. 다소 불쾌합니다. 어떻게 하겠습니까?", opts:[
+    {t:"지적은 받아들이고, 표현 방식은 나중에 따로 이야기한다.", p:3},
+    {t:"그 자리에서는 넘기고 스스로 감정을 추스른다.", p:2},
+    {t:"바로 받아쳐서 분위기가 어색해진다.", p:1},
+    {t:"화를 내거나 며칠간 그 동료를 피한다.", p:0}]},
+  {n:4, q:"여러 업무가 한꺼번에 몰려 마감을 모두 지키기 어려운 상황입니다. 어떻게 하겠습니까?", opts:[
+    {t:"우선순위를 정리해 상사와 일정을 조정한다.", p:3},
+    {t:"가장 급한 것부터 야근을 해서라도 처리한다.", p:2},
+    {t:"손에 잡히는 것부터 하고 나머지는 되는대로 한다.", p:1},
+    {t:"마감을 넘긴 뒤 사정을 설명한다.", p:0}]},
+  {n:5, q:"중요한 발표를 앞두고 갑자기 자료에 문제가 생겨 압박감이 큽니다. 어떻게 하겠습니까?", opts:[
+    {t:"침착하게 우선 할 수 있는 조치부터 차근차근 한다.", p:3},
+    {t:"긴장되지만 동료에게 도움을 청해 함께 해결한다.", p:2},
+    {t:"불안해서 일이 손에 잘 잡히지 않는다.", p:1},
+    {t:"당황해서 마감 직전까지 갈팡질팡한다.", p:0}]},
+  {n:6, q:"우리 측 실수로 고객이 손해를 봤는데, 고객은 아직 원인을 모릅니다. 어떻게 하겠습니까?", opts:[
+    {t:"사실대로 원인을 설명하고 해결책을 제시한다.", p:3},
+    {t:"상사에게 보고하고 회사 방침에 따라 정직하게 안내한다.", p:2},
+    {t:"원인은 두루뭉술하게 넘기되 해결만 적극적으로 한다.", p:1},
+    {t:"고객이 모르니 굳이 밝히지 않는다.", p:0}]}
+];
+var byN={}; ITEMS.forEach(function(it){ byN[it.n]=it; });
+var qWrap = document.getElementById("questions");
+var disp=0;
+CATS.forEach(function(cat){
+  var head=document.createElement("div"); head.className="cat";
+  head.innerHTML='<span class="cno">'+cat.no+'</span><div><div class="ct">'+cat.t+'</div><div class="cd">'+cat.d+'</div></div>';
+  qWrap.appendChild(head);
+  cat.nums.forEach(function(n){
+    var it=byN[n]; disp++;
+    var q=document.createElement("div"); q.className="q"; q.id="q"+it.n;
+    var opts="";
+    for(var v=1; v<=5; v++){
+      var label=ANCHORS[v-1].replace("|","<br>");
+      opts+='<label class="opt"><input type="radio" name="q'+it.n+'" value="'+v+'">'
+        +'<span class="face"><span class="dot">'+v+'</span><span class="lab">'+label+'</span></span></label>';
+    }
+    q.innerHTML='<div class="qt"><span class="qn">'+disp+'</span>'+it.t+'</div><div class="scale">'+opts+'</div>';
+    qWrap.appendChild(q);
+  });
+});
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+var sjtWrap = document.getElementById("sjt");
+SJT.forEach(function(it,idx){
+  var q = document.createElement("div");
+  q.className="q"; q.id="sq"+it.n;
+  var order = shuffle(it.opts.map(function(o,i){return {t:o.t,p:o.p,oi:i};}));
+  var opts="";
+  order.forEach(function(o){
+    opts += '<label class="choice"><input type="radio" name="s'+it.n+'" value="'+o.oi+'"><span>'+o.t+'</span></label>';
+  });
+  q.innerHTML = '<div class="sit"><span class="qn">'+(idx+1)+'</span>'+it.q+'</div><div class="choices">'+opts+'</div>';
+  sjtWrap.appendChild(q);
+});
+var TOTAL = ITEMS.length + SJT.length;
+var fill=document.getElementById("fill"), count=document.getElementById("count");
+function answeredCount(){
+  var c=0;
+  ITEMS.forEach(function(it){ if(document.querySelector('input[name="q'+it.n+'"]:checked')) c++; });
+  SJT.forEach(function(it){ if(document.querySelector('input[name="s'+it.n+'"]:checked')) c++; });
+  return c;
+}
+function updateProgress(){
+  var c=answeredCount();
+  fill.style.width=(c/TOTAL*100)+"%";
+  count.textContent=c+" / "+TOTAL;
+}
+document.addEventListener("change", function(e){
+  var nm=e.target.name||"";
+  if(nm.charAt(0)==="q"){ var q=document.getElementById("q"+nm.slice(1)); if(q) q.classList.remove("missing"); updateProgress(); }
+  else if(nm.charAt(0)==="s"){ var q2=document.getElementById("sq"+nm.slice(1)); if(q2) q2.classList.remove("missing"); updateProgress(); }
+});
+function scoreAnswer(it, raw){ return it.d==="R" ? (6-raw) : raw; }
+function band(v, hi, mid){ return v>=hi ? "양호" : (v>=mid ? "보통" : "주의"); }
+function computeLikert(answers){
+  var C=0,I=0,A=0,E=0,L=0;
+  ITEMS.forEach(function(it){
+    var raw=answers[it.n];
+    if(it.s==="C") C+=scoreAnswer(it,raw);
+    else if(it.s==="I") I+=scoreAnswer(it,raw);
+    else if(it.s==="A") A+=scoreAnswer(it,raw);
+    else if(it.s==="E") E+=scoreAnswer(it,raw);
+    else L+=raw;
+  });
+  var pairA=Math.abs(answers[7]-answers[27]);
+  var pairB=Math.abs(answers[6]-answers[21]);
+  var flags=[pairA>=3, pairB>=3].filter(Boolean).length;
+  var consistency = flags===2 ? "무성의" : (flags===1 ? "주의" : "정상");
+  var validity = L>=19 ? "무효가능" : (L>=13 ? "주의" : "정상");
+  return {C:C,I:I,A:A,E:E,L:L,
+    Cband:band(C,36,27), Iband:band(I,36,27), Aband:band(A,32,24), Eband:band(E,32,24),
+    validity:validity, consistency:consistency, pairA:pairA, pairB:pairB};
+}
+function computeSJT(picks){
+  var total=0, worst=0;
+  SJT.forEach(function(it){ var p=it.opts[picks[it.n]].p; total+=p; if(p===0) worst++; });
+  return {total:total, worst:worst, band: total>=15 ? "양호" : (total>=10 ? "보통" : "주의")};
+}
+function deriveOverall(r, s){
+  if(r.validity==="무효가능" || r.consistency==="무성의") return "해석 보류 — 재실시/면접 확인";
+  if(r.Iband==="주의" || s.worst>=2) return "정직성 리스크 — 평판조회·구조화 면접으로 교차검증";
+  if(r.Aband==="주의") return "대인·공격성 리스크 — 갈등 가능성, 면접에서 협업 사례 확인";
+  if(r.Eband==="주의") return "정서안정 리스크 — 압박 상황 대처·기복 면접 확인";
+  if(s.band==="주의") return "상황대응 리스크 — 판단·행동 사례 면접 확인";
+  if(r.Cband==="주의") return "성실성 리스크 — 근태·완결성 확인 필요";
+  return "인성 측면 특이 리스크 낮음";
+}
+var btn=document.getElementById("submitBtn");
+var formErr=document.getElementById("formErr");
+btn.addEventListener("click", async function(){
+  var infoErr=document.getElementById("infoErr");
+  var nameV=(document.getElementById("name").value||"").trim();
+  var jobV=(document.getElementById("job").value||"").trim();
+  var phoneV=(document.getElementById("phone").value||"").trim();
+  var agreed=document.getElementById("agree").checked;
+  document.getElementById("name").classList.toggle("miss", !nameV);
+  document.getElementById("job").classList.toggle("miss", !jobV);
+  document.getElementById("phone").classList.toggle("miss", !phoneV);
+  document.getElementById("consentCard").classList.toggle("missing", !agreed);
+  document.getElementById("agreeRow").classList.toggle("missing", !agreed);
+  if(!agreed || !nameV || !jobV || !phoneV){
+    infoErr.classList.remove("hide");
+    document.getElementById(!agreed?"consentCard":(!nameV?"name":(!jobV?"job":"phone"))).scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  infoErr.classList.add("hide");
+  var missing=[]; var answers={}, picks={};
+  ITEMS.forEach(function(it){
+    var sel=document.querySelector('input[name="q'+it.n+'"]:checked');
+    if(!sel){ missing.push("q"+it.n); document.getElementById("q"+it.n).classList.add("missing"); }
+    else answers[it.n]=parseInt(sel.value,10);
+  });
+  SJT.forEach(function(it){
+    var sel=document.querySelector('input[name="s'+it.n+'"]:checked');
+    if(!sel){ missing.push("sq"+it.n); document.getElementById("sq"+it.n).classList.add("missing"); }
+    else picks[it.n]=parseInt(sel.value,10);
+  });
+  if(missing.length){
+    formErr.classList.remove("hide");
+    document.getElementById(missing[0]).scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  formErr.classList.add("hide");
+  btn.disabled=true; btn.textContent="제출 중…";
+  var r=computeLikert(answers);
+  var s=computeSJT(picks);
+  var overall=deriveOverall(r,s);
+  var sjtPicks={}; SJT.forEach(function(it){ sjtPicks[it.n]=it.opts[picks[it.n]].p; });
+  var payload={
+    timestamp:new Date().toISOString(),
+    name:(document.getElementById("name").value||"").trim(),
+    job:(document.getElementById("job").value||"").trim(),
+    phone:(document.getElementById("phone").value||"").trim(),
+    answers:answers, sjtPicks:sjtPicks,
+    "성실성_점수":r.C, "성실성_판정":r.Cband,
+    "정직성_점수":r.I, "정직성_판정":r.Iband,
+    "공격성_점수":r.A, "공격성_판정":r.Aband,
+    "정서안정_점수":r.E, "정서안정_판정":r.Eband,
+    "위장_점수":r.L, "위장_판정":r.validity,
+    "일관성":r.consistency, "일관성차_A":r.pairA, "일관성차_B":r.pairB,
+    "상황판단_점수":s.total, "상황판단_판정":s.band, "상황판단_최악선택수":s.worst,
+    "종합판정":overall
+  };
+  document.getElementById("testView").classList.add("hide");
+  document.getElementById("progressBar").classList.add("hide");
+  document.getElementById("doneView").classList.remove("hide");
+  window.scrollTo(0,0);
+  var sendState=document.getElementById("sendState");
+  if(ENDPOINT_URL){
+    try{
+      await fetch(ENDPOINT_URL,{method:"POST",mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload)});
+      sendState.textContent="결과가 정상적으로 전송되었습니다.";
+    }catch(err){
+      sendState.textContent="전송 중 문제가 있었지만 응답은 기록되었습니다.";
+      console.log("[백업 결과코드]", btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
+    }
+  }else{
+    console.log("[결과 payload]", payload);
+    console.log("[백업 결과코드]", btoa(unescape(encodeURIComponent(JSON.stringify(payload)))));
+  }
+});
+updateProgress();
+</script>
+</body>
+</html>
