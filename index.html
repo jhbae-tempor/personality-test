@@ -386,9 +386,21 @@ function computeSJT(picks){
   return {total:total, worst:worst, band: total>=12 ? "양호" : (total>=8 ? "보통" : "주의")};
 }
 function computeStyle(picksB){
-  var arr=[];
-  BG.forEach(function(it){ arr.push(picksB[it.n]==="a"?it.la:it.lb); });
-  return arr.join("·");
+  var labels=[];
+  BG.forEach(function(it){ labels.push(picksB[it.n]==="a"?it.la:it.lb); });
+  var TYPES=[
+    {name:"창의 개척형", meta:"새 길을 내는 탐험가", sig:["혁신","큰그림","과감","직관형","성취지향"], jobs:"기획·디자인·마케팅·신사업"},
+    {name:"디테일 장인형", meta:"한 땀 한 땀 마무리하는 장인", sig:["디테일","신중","안정","논리형","집중형"], jobs:"QA·품질관리·회계/재무·운영관리"},
+    {name:"분석 엔지니어형", meta:"구조를 파고드는 설계자", sig:["논리형","디테일","독립형","집중형","신중"], jobs:"개발·데이터/분석·연구·설계"},
+    {name:"추진 해결형", meta:"목표로 돌진하는 러너", sig:["과감","성취지향","직설","독립형","멀티형"], jobs:"영업·세일즈·사업개발·프로젝트 리드"},
+    {name:"조율 소통형", meta:"사람 사이를 잇는 다리", sig:["협업형","완곡","안정지향","직관형","멀티형"], jobs:"CS·HR·영업지원·운영/총무·PM"}
+  ];
+  var best=TYPES[0], bestScore=-1;
+  TYPES.forEach(function(t){
+    var sc=0; labels.forEach(function(l){ if(t.sig.indexOf(l)>=0) sc++; });
+    if(sc>bestScore){ bestScore=sc; best=t; }
+  });
+  return "【"+best.name+"】 "+best.meta+" · 추천직무: "+best.jobs+"  |  성향: "+labels.join("·");
 }
 function deriveOverall(r, s){
   if(r.validity==="무효가능") return "[주의·신뢰성] 응답 신뢰성 낮음(과장·방어 응답)  —  사유: 위장(과장응답) 점수가 매우 높아, 자신을 실제보다 좋게 포장한 정황이 강합니다. 이 경우 성실성·정직성 등 다른 영역 점수도 그대로 신뢰하기 어렵습니다.  —  권고: 채용 우선순위를 낮추는 것을 권장합니다. 면접에서 솔직성·자기인식을 직접 확인하거나 동일 검사를 재실시하세요. (단, 과장 응답이 곧 부정직의 증거는 아니므로 최종 판단은 면접과 함께 종합하세요.)";
