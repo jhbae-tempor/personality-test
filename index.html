@@ -205,7 +205,7 @@
   </div>
 </div>
 <script>
-const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzD9WLdVIcAWZd-YjjUSPpOVTm2sHaRrPpDKOFF2VDJCTRVxvVlEVlEFQLKcqGhUPe6_Q/exec";
+const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxxXd9dsaye_a3txuuoHRZVkmdggrsk_3CTWienxfIFfMrv6l94Gs1lf_t8lwuBwalj/exec";
 /* 1부. s=척도(C성실 / I정직 / A공격성-대인 / E정서안정 / L위장), d=채점(+정 / R역 / L위장) */
 const ITEMS = [
   {n:1, s:"C", d:"+", f:"계획성", t:"일을 시작하기 전에 순서와 계획을 먼저 정해 둔다."},
@@ -415,6 +415,17 @@ function deriveOverall(r, s){
   if(r.validity==="주의") return "[참고·신뢰성] 다소 좋게 포장한 경향  —  사유: 위장(과장응답) 점수가 다소 높습니다(심각한 수준은 아님). 자신을 약간 좋게 표현한 정황이라, 점수를 약간 보수적으로 해석하세요.  —  권고: 면접에서 솔직성을 가볍게 확인하세요. 나머지 영역에 두드러진 위험 신호는 없습니다.";
   return "[양호] 인성 측면 특이 리스크 낮음  —  사유: 네 영역 모두 보통 이상이며 응답 신뢰성(위장·일관성)도 정상입니다. 두드러진 위험 신호가 없습니다.  —  권고: 인성검사상 결격 사유는 없습니다. 직무역량·경력 등 다른 평가요소로 진행하세요.";
 }
+function crossCheck(answers, picksB){
+  function sc(n){ return scoreAnswer(byN[n], answers[n]); }
+  var mism=0;
+  var s1=sc(1)+sc(21);                         // 계획성·신중 (높을수록 신중/계획적)
+  if(s1>=9 && picksB[1]==="a") mism++;         // 매우 신중하다면서 3부 '과감' 선택
+  else if(s1<=3 && picksB[1]==="b") mism++;    // 매우 즉흥적이면서 3부 '신중' 선택
+  var s2=sc(8)+sc(18);                         // 협업·배려 (높을수록 협력적)
+  if(s2>=9 && picksB[3]==="a") mism++;         // 매우 협력적이면서 3부 '독립형' 선택
+  else if(s2<=3 && picksB[3]==="b") mism++;    // 매우 비협력적이면서 3부 '협업형' 선택
+  return mism;
+}
 var btn=document.getElementById("submitBtn");
 var formErr=document.getElementById("formErr");
 btn.addEventListener("click", async function(){
@@ -462,6 +473,8 @@ btn.addEventListener("click", async function(){
   var s=computeSJT(picks);
   var styleProfile=computeStyle(picksB);
   var overall=deriveOverall(r,s);
+  var mism=crossCheck(answers,picksB);
+  if(mism>=1) overall = overall + "  ※ [참고] 자기보고(1부)와 업무스타일(3부)이 강하게 엇갈리는 항목 "+mism+"건 — 응답 진정성을 한 번 더 확인해 보세요.";
   var sjtPicks={}; SJT.forEach(function(it){ sjtPicks[it.n]=it.opts[picks[it.n]].p; });
   var payload={
     timestamp:new Date().toISOString(),
